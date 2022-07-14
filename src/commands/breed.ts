@@ -8,10 +8,7 @@ import { alpha_breed } from "../tools/discomon/alpha_seed";
 import send_breed from "../tools/discord/send_breed";
 
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (args[0] === 'help') {
         return send_help_embed(
             message,
@@ -52,8 +49,6 @@ export default async function ({
     if (!p1 || !p2) {
         return sender(`**❌ No Discomon in one or more of those slots.**`);
     }
-    // const p1 = party.filter(x => x.slot === p1_slot)[0];
-    // const p2 = party.filter(x => x.slot === p2_slot)[0];
     const mon1_chipped = await db_fns.mon_in_dex(p1.seed);
     const mon2_chipped = await db_fns.mon_in_dex(p2.seed);
     if (!mon1_chipped || !mon2_chipped) {

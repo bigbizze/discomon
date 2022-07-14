@@ -9,10 +9,7 @@ import { get_leader_image } from "../tools/discomon/image-generator/get-leader-i
 import advert from "../tools/discord/advert";
 import send_help_embed from "../tools/discord/send_help_embed";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (args[0] === 'help') {
         return send_help_embed(message, 'Type `.leaderboard <type (optional)>` to view a leaderboard.\n' +
             '`all`: all time wins.\n`runeterror`: runeterror damage.\n`default`: discomon less than 3 days old (wins).',

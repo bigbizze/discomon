@@ -23,10 +23,7 @@ const resolve_amount = (inventory_candies: number, first_arg: null | number | "a
     return 1;
 };
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     const first_arg = first(args);
     if (first_arg === 'help') {
         return send_help_embed(message, 'Type `.candy <value (optional) or all>` to give candy to your active Discomon.', 'candy', discord.user.avatarURL());

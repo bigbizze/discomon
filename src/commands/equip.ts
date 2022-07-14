@@ -8,10 +8,7 @@ import prng_item from "../tools/discomon/prng-generator/prng-items";
 import { item_equip_image } from "../tools/discomon/item-image-generator";
 import { item_rarity_colour_switch } from "../tools/database/open_lootbox";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (args[0] === 'help') {
         return send_help_embed(message, 'Type `.equip <rune number> <Discomon item slot number (1, 2 or 3)>` to equip a rune to your active Discomon.\n' +
             'Be careful, runes can\'t can be removed but they will be overwritten if you use the same slot twice.', 'equip', discord.user.avatarURL(), '.equip 2 1', '.equip 7 3');

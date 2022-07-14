@@ -39,14 +39,6 @@ const regular_mon = async (first_arg: string | null, {
             ? Number(first_arg)
             : null;
     const db_mon = index ? await get_at_index(db_fns, message, index, user) : await db_fns.get_active_mon(user.id);
-    // if (!index) {
-    //     return sender(`${icon_manager("error")} \`There is no Discomon in this party slot.\``);
-    // }
-
-    // const mons = await db_fns.get_mons(message.member.id, "party");
-    // const db_mon = first(mons.filter(x => x.slot === index));
-    // const db_mon = mon_array[index - 1];
-    // const db_mon = index && !Number.isNaN(index) ? (await db_fns.get_all_alive_mon(user.id))[index - 1] : await db_fns.get_active_mon(user.id);
     if (!db_mon) {
         return sender(`**❌ No such Discomon.**`);
     }

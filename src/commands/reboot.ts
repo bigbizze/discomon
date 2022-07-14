@@ -2,11 +2,7 @@ import { DefaultCommandsReturn } from "./index";
 import { ClientOperator } from "../bot-types";
 import { MessageNonNull, send_to_discord } from "../helpers/discomon_helpers";
 
-export default async function ({
-                                   discord,
-                                   db_fns,
-                                   commands
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns, commands }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (message.author.id === '217934695055228928' || message.author.id === "279344233607987210") {
         if (args.length === 0) {
             return;

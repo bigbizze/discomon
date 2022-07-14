@@ -57,10 +57,7 @@ async function hatch(
     return [ this_id, open_party_slot ];
 }
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     const first_arg = first(args);
     if (first_arg === 'help') {
         return send_help_embed(

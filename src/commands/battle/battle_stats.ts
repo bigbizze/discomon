@@ -5,12 +5,6 @@ import { BattleEndStateInternal } from "../../tools/battles";
 import { date_to_mysql } from "../../helpers/date_helpers";
 import { most_recent_battle_update_notes } from "../../constants";
 
-interface BattleStats {
-    db_fns: ResolvedDbFns;
-    battle_stats: DbBattleStats;
-    battle_turn_stats: BattleTurnStat[];
-}
-
 export type MapBattleStatTurnToDb = (
     attacker_owner: string,
     attacker_discomon: number,

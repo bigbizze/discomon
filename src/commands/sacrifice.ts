@@ -53,10 +53,7 @@ const parse_first_arg = (args: string[]): number | 'all' | 'help' | undefined =>
 };
 
 
-export default async function sacrifice({
-                                            discord,
-                                            db_fns
-                                        }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function sacrifice({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     const first_arg = parse_first_arg(args);
     if (first_arg === 'help') {
         return send_help_embed(message, 'Type `.sacrifice <party number>` to release a Discomon.\n**IRREVERSIBLE**', 'release', discord.user.avatarURL());

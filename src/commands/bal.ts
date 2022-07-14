@@ -3,10 +3,7 @@ import { DefaultCommandsReturn } from "./index";
 import { ClientOperator } from "../bot-types";
 import send_player_profile from "../tools/discord/send_player_profile";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull): Promise<DefaultCommandsReturn> {
     if (!await db_fns.user_exists(message.member.id)) {
         return send_to_discord(message.channel, '❌ `you are not .hatched`');
     }

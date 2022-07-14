@@ -8,7 +8,7 @@ import { clamp } from "../../tools/discomon/image-generator/utils";
 import { DbDiscomon } from "../../scaffold/database_types";
 
 
-////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 export async function get_battle_player(player_type: "attacker", db_fns: ResolvedDbFns, id: string, display_name: string, db_mon: DbDiscomon): Promise<AttackerBattle>;

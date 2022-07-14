@@ -23,11 +23,6 @@ const resolve_args = (...args: string[]): number | undefined => {
     if (first_arg != null) {
         return first_arg;
     }
-    // const second_arg = resolve_arg(Number(second(args)));
-    // if (second_arg == null) {
-    //     return;
-    // }
-    // return [ first_arg, second_arg ];
 };
 
 export default async function (client: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {

@@ -9,10 +9,7 @@ import cs from '../tools/discomon/image-generator/color_schemes';
 import advert from "../tools/discord/advert";
 import { MessageNonNull, send_to_discord } from "../helpers/discomon_helpers";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (first(args) === 'help') {
         return send_help_embed(message, 'Type `.dex <page number (optional)>` to see the global dex.\nType `.dex <@user>` to see someone\'s personal discoveries.', 'dex', discord?.user?.avatarURL());
     }

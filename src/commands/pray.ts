@@ -44,10 +44,7 @@ const do_fields = (display_name: string, user_premium: PatreonTiers) => {
     };
 };
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (first(args) === 'help') {
         return send_help_embed(message, 'Type `.pray` every half hour to receive a gift from the heavens.', 'pray', discord.user.avatarURL());
     }

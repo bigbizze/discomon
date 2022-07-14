@@ -11,10 +11,7 @@ import { first } from "../helpers/array_helpers";
 import send_party_profile from "../tools/discord/send_party_profile";
 import { get_premium_tier } from "../tools/misc/premium_tiers";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (first(args) === 'help') {
         return send_help_embed(message, 'Get Discomon party.\nType `.party` to see your party.\n'
             + 'Type `.party @user` to see their party.', 'party', discord.user.avatarURL());

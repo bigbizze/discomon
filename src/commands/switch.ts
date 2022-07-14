@@ -6,11 +6,7 @@ import { first } from "../helpers/array_helpers";
 import { get_discord_sender, MessageNonNull } from "../helpers/discomon_helpers";
 import { check_battle_trackers } from "../tools/client/battle-trackers";
 
-export default async function ({
-                                   discord,
-                                   db_fns,
-                                   battles
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns, battles }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     const first_arg = first(args);
     if (first_arg === 'help') {
         return send_help_embed(message, 'Type `.switch <party number>` to switch your active Discomon..', 'switch', discord?.user?.avatarURL());

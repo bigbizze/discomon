@@ -6,10 +6,7 @@ import { first } from "../helpers/array_helpers";
 import send_player_eggs from "../tools/discord/send_player_eggs";
 import { get_premium_tier } from "../tools/misc/premium_tiers";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (first(args) === 'help') {
         return send_help_embed(message, 'Get egg inventory.\nType `.eggs` to see your inventory.\n', 'party', discord.user.avatarURL());
     }

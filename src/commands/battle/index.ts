@@ -71,7 +71,6 @@ export async function before_battle(db_fns: ResolvedDbFns, id: string, display_n
         await db_fns.set_inventory_value(id, 'shield', 0);
     }
     await db_fns.increment_inventory(id, 'token', (-1));
-    // await db_fns.set_battle_cooldown(attacker.id);
 }
 
 export const do_regular_battle = async (resolved_values: AttackerDefenderUser, discord: Client, db_fns: ResolvedDbFns, is_matchmaking: boolean): Promise<BattleEndState> => {

@@ -9,10 +9,7 @@ import { profanity } from '@2toad/profanity';
 import { discover_image } from "../tools/discomon/image-generator/embed_images";
 import get_alphamon from "../tools/discomon/alpha_seed";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (first(args) === 'help') {
         return send_help_embed(message, 'Type `.chip <official name>` to add your active Discomon to the dex.\nRequires chips and level 18.', 'chip', discord?.user?.avatarURL());
     }

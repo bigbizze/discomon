@@ -12,7 +12,6 @@ import { PatreonTiers } from "../patreon-dbl-server";
 
 const get_challenge_text = async (user_id: string, db_fns: ResolvedDbFns) => {
     const user_challenges = await db_fns.get_user_challenges(user_id);
-    // const user_challenge_names = user_challenges.map(x => x.challenge_name);
     const user_gate_type = await db_fns.get_user_gate_type(user_id);
     let completed_challenges: Quest<CommandsReturn>[] = [];
     let available_challenges: Quest<CommandsReturn>[] = [];

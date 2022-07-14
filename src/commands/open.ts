@@ -18,11 +18,7 @@ const loot_box_variants = [
     "lootboxes"
 ];
 
-export async function new_do({
-                                 discord,
-                                 db_fns,
-                                 commands
-                             }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export async function new_do({ discord, db_fns, commands }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (!await db_fns.user_exists(message.author.id)) {
         return;
     }
@@ -35,47 +31,6 @@ export async function new_do({
     if (first_arg === 'help') {
         return send_help_embed(message, 'Type `.open <number lootboxes>` to open a specified number of lootboxes', 'open', discord?.user?.avatarURL());
     }
-}
-
-export async function open_old({
-                                   discord,
-                                   db_fns,
-                                   commands
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
-    if (!await db_fns.user_exists(message.author.id)) {
-        return;
-    }
-    const first_arg = first(args);
-    if (first_arg === 'help') {
-        return send_help_embed(message, 'Type `.open <number lootboxes>` to open a specified number of lootboxes', 'open', discord?.user?.avatarURL());
-    }
-    const is_boss = first_arg != null && rune_box_variants.includes(first_arg.trim().toLowerCase());
-    const sender = get_discord_sender(message.channel);
-    const inventory = await db_fns.get_inventory(message.member.id);
-    if ((!is_boss && inventory.lootbox < 1) || (is_boss && inventory.runebox < 1)) {
-        return sender(`**❌ You have no ${ !is_boss ? "loot" : "rune" }boxes.**`);
-    }
-    const is_arg_number = args.length > 0 && !Number.isNaN(args[0]);
-    if (is_arg_number && Number(first_arg) > inventory.lootbox) {
-        return sender(`**❌ You have requested ${ first_arg } lootboxes but only have ${ inventory.lootbox } available to open!**`);
-    }
-    const num_iters = is_arg_number ? Number(args[0]) : inventory.lootbox;
-    const num_items_owned = (await db_fns.get_all_items(message.member.id)).length;
-    return await send_lootbox(
-        db_fns,
-        message.member.id,
-        message.channel,
-        async () => await db_fns.open_many_lootboxes(
-            db_fns,
-            message.member as GuildMember,
-            message.channel,
-            false,
-            num_iters,
-            num_items_owned
-        ),
-        is_boss,
-        message.member.displayName
-    );
 }
 
 const resolve_second_argument = (first_arg: string | null): 'rune' | 'loot' | undefined => {
@@ -99,11 +54,7 @@ const resolve_first_argument = (second_arg: string | null): number | 'all' => {
     return 'all';
 };
 
-export default async function ({
-                                   discord,
-                                   db_fns,
-                                   commands
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns, commands }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     if (!await db_fns.user_exists(message.author.id)) {
         return;
     }

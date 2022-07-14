@@ -4,10 +4,7 @@ import send_help_embed from "../tools/discord/send_help_embed";
 import { first } from "../helpers/array_helpers";
 import { get_discord_sender, MessageNonNull } from "../helpers/discomon_helpers";
 
-export default async function ({
-                                   discord,
-                                   db_fns
-                               }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
+export default async function ({ discord, db_fns }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     const first_arg = first(args);
     if (first_arg === 'help') {
         return send_help_embed(message, 'Type `.sell <items number>` to sell an items.\nItem slot numbers will increment automatically after an items is sold.\n**SO BE CAREFUL**\nType `.sell common` or `.sell rare` to sell all of those rarities.\nItems that are equipped will **not** be sold.', 'sell', discord.user.avatarURL());
