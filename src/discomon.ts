@@ -1,8 +1,11 @@
-import { BOT_TOKEN } from "./tools/discord/bot_token";
-
 require("../load-env");
+import { BOT_TOKEN } from "./tools/discord/bot_token";
 import { app_root_path } from "./constants";
 import { ShardingManager } from 'discord.js';
+
+/** main bot entry file */
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const manager = new ShardingManager(`${ app_root_path }/prod/bot.js`, {
     totalShards: 'auto',

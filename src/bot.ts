@@ -12,10 +12,6 @@ import { ClientOperator } from "./bot-types";
 import { check_discord_client_user_not_null, DiscordNotNull } from "./helpers/discomon_helpers";
 import { registerFont } from "canvas";
 
-/** main bot entry file */
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 registerFont('Imagine_Font.ttf', { family: 'thefont32' });
 
 function dbl(discord: Client) {
