@@ -1,0 +1,9 @@
+node_modules
+discomon.db
+discomon.db-wal
+discomon.db-shm
+.DS_Store
+.env
+/prod/*
+/.idea/
+/data/backup

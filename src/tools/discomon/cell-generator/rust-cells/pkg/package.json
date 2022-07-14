@@ -1,0 +1,15 @@
+{
+  "name": "cell-generator",
+  "collaborators": [
+    "Charles Anderson <hpcngmoh@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "cell_generator_bg.wasm",
+    "cell_generator.js",
+    "cell_generator_bg.js",
+    "cell_generator.d.ts"
+  ],
+  "main": "cell_generator.js",
+  "types": "cell_generator.d.ts"
+}

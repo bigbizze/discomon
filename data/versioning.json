@@ -1,0 +1,38 @@
+{
+  "updates": [
+    {
+      "name": "Initial Update",
+      "description": "This is the first state of recorded battles in Discomon",
+      "update_number": 1,
+      "generation_values": {
+        "grid": 0,
+        "ca_rule": 0,
+        "passes": 0,
+        "color1": 0,
+        "color2": 0,
+        "special": 0,
+        "passive": 0,
+        "hp": 0,
+        "damage": 0,
+        "s_chance": 0
+      }
+    },
+    {
+      "name": "Wound & Rebound Update #1",
+      "description": "Wound is changed to trigger every turn, heal procs before stun, dodge or confuse & rebound passive is added to game. Rebound always happens if you've confused or stunned your opponent, otherwise it has a 50% chance of happening. It scales with how much more damage your opponent has than you, with a min of 20 and max of 400.",
+      "update_number": 2,
+      "generation_values": {
+        "grid": 0,
+        "ca_rule": 0,
+        "passes": 0,
+        "color1": 0,
+        "color2": 0,
+        "special": 0,
+        "passive": 1,
+        "hp": 0,
+        "damage": 0,
+        "s_chance": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "icons": {
+    "commands": {
+      "pray": "✝",
+      "error": "❌",
+      "wait": "\uD83D\uDD50",
+      "quest_title": "♟",
+      "available_quests": "\uD83D\uDF9C",
+      "completed_quests": "\uD83D\uDF96",
+      "command_deprecation": "\uD83D\uDCE3"
+    },
+    "inventory": {
+      "candy": "\uD83C\uDF6C",
+      "credits": "\uD83D\uDCB8",
+      "dust": "☄",
+      "tokens": "\uD83C\uDF9F",
+      "egg": "\uD83E\uDD5A",
+      "lootbox": "\u25A6",
+      "runebox": "\u25A6"
+    },
+    "battle": {
+      "crit": "\uD83C\uDFAF",
+      "lifesteal": "\uD83E\uDE78",
+      "stun": "\uD83D\uDCA5",
+      "confuse": "❓",
+      "wound": "\uD83D\uDC89",
+      "poison": "\uD83E\uDDEA",
+      "heal": "\uD83C\uDF43",
+      "enrage": "\uD83D\uDCA2",
+      "charge": "\uD83D\uDD0B",
+      "dodge": "\uD83D\uDCA8",
+      "composed": "✅",
+      "nullify": "⛔",
+      "rebound": "\uD83D\uDDB1"
+    }
+  }
+}

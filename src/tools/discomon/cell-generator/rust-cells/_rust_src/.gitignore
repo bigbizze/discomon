@@ -1,0 +1,5 @@
+/target
+Cargo.lock
+
+# Project exclude paths
+/node_modules/

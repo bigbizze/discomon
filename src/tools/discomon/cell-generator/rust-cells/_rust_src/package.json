@@ -1,0 +1,19 @@
+{
+  "name": "c-rust-node-bind",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Charles Anderson <hpcngmoh@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "wasm": "wasm-pack build --target nodejs"
+  },
+  "dependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/register": "^7.10.3",
+    "@types/node": "^14.0.14",
+    "sizeof": "^1.0.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.5"
+  }
+}
