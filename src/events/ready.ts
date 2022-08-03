@@ -8,7 +8,7 @@ export function ready({ discord }: UnresolvedClientOperator) {
         }
         await Promise.all([
             discord.user.setActivity("check .news / .help", { type: 'STREAMING' }),
-            discord.user.setUsername('Discord Monsters')
+            discord.user.setUsername('Discomon')
         ]);
     };
 }
