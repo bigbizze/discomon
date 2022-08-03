@@ -1,8 +1,6 @@
 // const SQLite = require("better-sqlite3");
 // const sql = new SQLite('../discomon.db');
-import { Connection } from 'mariadb';
-import get_db_connection from "../tools/client/get_db_connection";
-import { date_to_mysql } from "../helpers/date_helpers";
+import { withDb } from "../tools/client/get_db_connection";
 import { get_random_boss_name } from "../helpers/discomon_helpers";
 import { get_alpha_from_seed } from "../tools/discomon/alpha_seed/utils";
 import readline from "readline";
@@ -101,8 +99,9 @@ CREATE TABLE IF NOT EXISTS eggs(
     owner VARCHAR(18) NOT NULL,
     type VARCHAR(255) NOT NULL,
     adam VARCHAR(255) DEFAULT NULL,
-    eve VARCAHR(255) DEFAULT NULL,
-    used INTEGER NOT NULL DEFAULT 0
+    eve VARCHAR(255) DEFAULT NULL,
+    used INTEGER NOT NULL DEFAULT 0,
+    created_on TIMESTAMP NOT NULL DEFAULT current_timestamp
 );`;
 
 const patreon = `
@@ -117,10 +116,10 @@ CREATE TABLE IF NOT EXISTS patreon(
 );`;
 
 const quests = `
-CREATE TABLE IF NOT EXISTS challenges(
+CREATE TABLE IF NOT EXISTS quests(
     id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
     owner VARCHAR(18) NOT NULL,
-    quest_name VARCHAR(30),
+    command_name VARCHAR(30),
     expires_on DATETIME,
     value INTEGER,
     complete TINYINT(4),
@@ -206,8 +205,7 @@ VALUES("${ get_alpha_from_seed(123456) }", 6500, 400000, 400000, 150, 15, "${ Da
 const date_str = `FROM_UNIXTIME(${ Math.floor(Date.now() / 1000) })`;
 const create_admins = () => `
 INSERT INTO players(id, registered)
-VALUES(217934695055228928, "${ date_to_mysql() }"),
-    (279344233607987210, "${ date_to_mysql() }");`;
+VALUES (279344233607987210, ${Date.now()});`;
 
 const admin_inventory = `
 UPDATE Discomon.inventory
@@ -217,7 +215,7 @@ WHERE owner="279344233607987210" or owner="217934695055228928";
 
 const reboot_string = `
 INSERT INTO server_options(reboot, reboot_reason)
-VALUES(1, "default");
+VALUES(0, "default");
 `;
 if (require.main === module) {
     const line_reader = readline.createInterface({
@@ -227,23 +225,24 @@ if (require.main === module) {
     line_reader.question(`This will create if not exists all tables in the database, are you sure? [Yes/No]: `, (answer: string) => {
         if (answer.toLowerCase() === "y" || answer.toLowerCase() === "yes") {
             const create_table_queries = [
-                // players,
-                // discomon,
-                // items,
-                // inventory,
-                // boss,
-                // seeds,
-                // eggs,
-                // patreon,
+                players,
+                discomon,
+                items,
+                inventory,
+                boss,
+                seeds,
+                eggs,
+                patreon,
                 battle_stats,
-                battle_turns_stats
-                // server_options,
-                // reboot_string
-                // default_boss()
+                battle_turns_stats,
+                server_options,
+                reboot_string,
+                quests,
+                guilds,
+                default_boss()
                 // create_admins()
             ];
-
-            get_db_connection().then(async (conn: Connection) => {
+            withDb(async conn => {
                 await conn.beginTransaction();
                 // console.log(conn.query);
                 // const test2 = await get_user(conn)("279344233607987210");
@@ -260,7 +259,9 @@ if (require.main === module) {
                 // await conn.query(admin_inventory);
                 // await conn.commit();
                 await conn.end();
-            }).catch(err => console.log(err));
+            })
+              .catch(err => console.log(err))
+              .finally(() => process.exit(0));
         }
     });
 }
