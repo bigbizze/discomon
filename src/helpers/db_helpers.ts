@@ -1,7 +1,7 @@
 import { first } from "./array_helpers";
 import * as mysql from 'mysql';
 
-export const get_first_db_row = (rows: any) => {
+export const get_first_db_row = <T>(rows: T) => {
     if (Array.isArray(rows) && rows.length >= 1) {
         return first(rows);
     }
