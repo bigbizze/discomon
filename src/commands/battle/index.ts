@@ -13,7 +13,6 @@ import { get_battle_img } from "../../tools/discomon/image-generator/get-battle-
 import { ClientOperator } from "../../bot-types";
 import { is_type_one } from "../../helpers/general_helpers";
 import match from "../match";
-import { increment_battle_trackers } from "../../tools/client/battle-trackers";
 
 export interface UserDiscomonBattle extends DbDiscomon {
     level: number;
@@ -115,19 +114,10 @@ export default async function (client: ClientOperator, message: MessageNonNull, 
         return;
     }
     if (is_type_one<"matchmaking", AttackerDefenderUser>(validated_args, validated_args === "matchmaking")) {
-        const decrement_battle_trackers = await increment_battle_trackers(message);
-        if (decrement_battle_trackers == null) {
-            return;
-        }
-        return await match(client, message, decrement_battle_trackers, ...args);
+        return await match(client, message, ...args);
     } else {
-        const decrement_battle_trackers = await increment_battle_trackers(message, message.mentions.members.first()?.id);
-        if (decrement_battle_trackers == null) {
-            return;
-        }
         await before_battle(client.db_fns, validated_args.attacker.id, validated_args.attacker.display_name, message);
         const battle_results = await map_to_and_do_battle(client, validated_args, message, client.discord);
-        await decrement_battle_trackers();
         if (battle_results == null) {
             return "never_finished";
         }

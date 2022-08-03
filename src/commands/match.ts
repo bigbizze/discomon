@@ -6,9 +6,8 @@ import { before_battle, do_image_embed_on_battle_end, do_regular_battle, PlayerB
 import { get_battle_player } from "./battle/resolvers";
 import { clamp } from "../tools/discomon/image-generator/utils";
 import { random } from "../helpers/rng_helpers";
-import { ResolvedDbFns } from '../tools/database/index';
+import { ResolvedDbFns } from '../tools/database';
 import { BattleEndState } from "../tools/battles";
-import { DecrementFn } from "../tools/client/battle-trackers";
 import { GuildMember } from "discord.js";
 import { DbDiscomon } from "../scaffold/database_types";
 import { get_alpha_from_seed } from "../tools/discomon/alpha_seed/utils";
@@ -89,13 +88,11 @@ interface BattleMonFromDbArgs {
     client: ClientOperator;
     the_user: GuildMember;
     db_mon: DbDiscomon;
-    decrement_battle_trackers: DecrementFn;
 }
 
 async function battle_mon_from_db({
     message,
     db_mon,
-    decrement_battle_trackers,
     client,
     the_user
 }: BattleMonFromDbArgs): Promise<BattleEndState> {
@@ -113,33 +110,27 @@ async function battle_mon_from_db({
         is_pve: false
     }, client.discord, client.db_fns, true);
     await do_image_embed_on_battle_end(results, client, message);
-    await decrement_battle_trackers();
     return results;
 }
 
-export default async function (client: ClientOperator, message: MessageNonNull, decrement_battle_trackers: DecrementFn, ...args: string[]): Promise<BattleEndState | "never_finished" | void> {
+export default async function (client: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<BattleEndState | "never_finished" | void> {
     if (first(args) === 'help') {
-        await decrement_battle_trackers();
         return send_help_embed(message, 'Get egg inventory.\nType `.eggs` to see your inventory.\n', 'party', client.discord.user.avatarURL());
     }
     const sender = get_discord_sender(message.channel);
     const the_user = message.member;
     if (!the_user?.id) {
-        await decrement_battle_trackers();
         return;
     }
     if (!await client.db_fns.user_exists(the_user.id)) {
-        await decrement_battle_trackers();
         return sender('❌`.hatch first.`');
     }
     if (!await client.db_fns.has_mon(the_user.id)) {
-        await decrement_battle_trackers();
         return sender('❌`.hatch a Discomon first.`');
     }
 
     const inventory = await client.db_fns.get_inventory(the_user.id);
     if (inventory.token <= 0) {
-        await decrement_battle_trackers();
         return sender('❌ `you have no battle tokens. Type .buy to bring up the shop menu.`');
     }
     await before_battle(client.db_fns, the_user.id, the_user.displayName, message);
@@ -148,7 +139,6 @@ export default async function (client: ClientOperator, message: MessageNonNull, 
         message,
         client,
         db_mon,
-        decrement_battle_trackers,
         the_user
     });
     return battle_result_return as BattleEndState;

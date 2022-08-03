@@ -4,7 +4,6 @@ import do_roles from "../tools/misc/do_role";
 import send_help_embed from "../tools/discord/send_help_embed";
 import { first } from "../helpers/array_helpers";
 import { get_discord_sender, MessageNonNull } from "../helpers/discomon_helpers";
-import { check_battle_trackers } from "../tools/client/battle-trackers";
 
 export default async function ({ discord, db_fns, battles }: ClientOperator, message: MessageNonNull, ...args: string[]): Promise<DefaultCommandsReturn> {
     const first_arg = first(args);
@@ -12,9 +11,6 @@ export default async function ({ discord, db_fns, battles }: ClientOperator, mes
         return send_help_embed(message, 'Type `.switch <party number>` to switch your active Discomon..', 'switch', discord?.user?.avatarURL());
     }
     const sender = get_discord_sender(message.channel);
-    if (!await check_battle_trackers(message)) {
-        return;
-    }
     if (!first_arg || Number.isNaN(first_arg)) {
         return sender(`**❌ No party number specified.**`);
     }
