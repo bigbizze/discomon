@@ -2,10 +2,9 @@ import { UnresolvedClientOperator } from "../bot-types";
 import { Guild, Message } from "discord.js";
 import { date_to_mysql } from "../helpers/date_helpers";
 import { differenceInWeeks } from "date-fns";
-import get_db_connection from "../tools/client/get_db_connection";
+import { ConnectPromise, withDb } from "../tools/client/get_db_connection";
 import { promise_then_catch } from "../helpers/general_helpers";
 import { DiscordNotNull, get_discord_sender, MessageNonNull, send_to_discord } from "../helpers/discomon_helpers";
-import { Connection } from "mariadb";
 import { DefaultCommandsReturn } from "../commands";
 import { first } from "../helpers/array_helpers";
 import send_help_embed from "../tools/discord/send_help_embed";
@@ -20,30 +19,29 @@ type GuildCacheItem = {
 const get_guild_commands = () => {
     return {
         initialize_cache: async (cache: Map<string, GuildCacheItem>) => {
-            const conn = await get_db_connection();
-            const rows = await conn.query(`SELECT id,prefix,last_updated FROM guilds;`) as { id: string, prefix: string, last_updated: Date }[];
-            await conn.end();
-            for (let { id, prefix, last_updated } of rows) {
-                cache.set(id, {
-                    prefix,
-                    last_sql_update: last_updated
-                });
-            }
+            await withDb(async conn => {
+                const rows = await conn.query(`SELECT id,prefix,last_updated FROM guilds;`) as { id: string, prefix: string, last_updated: Date }[];
+                // await conn.end();
+                for (let { id, prefix, last_updated } of rows) {
+                    cache.set(id, {
+                        prefix,
+                        last_sql_update: last_updated
+                    });
+                }
+            });
         },
-        update_or_insert_guild: async (guild: Guild, conn?: Connection | null, new_prefix?: string) => {
+        update_or_insert_guild: async (guild: Guild, conn?: ConnectPromise | null, new_prefix?: string) => {
             const name = guild.name && guild.name !== "" ? guild.name : "null";
             const locale = guild.preferredLocale && guild.preferredLocale !== "" ? guild.preferredLocale : "null";
             const num_text_channels = guild.channels.cache.filter((x: any) => x?.type && x.type === "text").size;
             const last_sql_update = new Date();
-            const _conn = !conn ? await get_db_connection() : conn;
-            await _conn.query(`
+            await withDb(async conn => {
+                await conn.query(`
                 INSERT INTO guilds (id, owner, shard_id, name, locale, num_members, num_text_channels${ new_prefix ? `, prefix` : "" }, last_updated)
                  VALUES("${ guild.id }", "${ guild.ownerID }", ${ guild.shardID }, "${ escape_string(name) }", "${ locale }", ${ guild.memberCount }, ${ num_text_channels }${ new_prefix ? `, "${ escape_string(new_prefix) }"` : "" }, "${ date_to_mysql(last_sql_update) }")
                   ON DUPLICATE KEY UPDATE name="${ escape_string(name) }", num_members=${ guild.memberCount }, num_text_channels=${ num_text_channels }, last_updated="${ date_to_mysql(last_sql_update) }"${ new_prefix ? `, prefix="${ escape_string(new_prefix) }"` : "" }
             `);
-            if (!conn) {
-                await _conn.end();
-            }
+            }, false, conn != null ? conn : undefined)
             return last_sql_update;
         }
     };
@@ -68,7 +66,7 @@ const guild_cache = (function setup_guild_cache() {
             }
             return cached_item.prefix;
         },
-        update_prefix: async (conn: Connection, guild: Guild, prefix: string) => {
+        update_prefix: async (conn: ConnectPromise, guild: Guild, prefix: string) => {
             const last_sql_update = await guild_commands.update_or_insert_guild(guild, conn, prefix);
             cache.set(guild.id, {
                 last_sql_update,
@@ -89,7 +87,7 @@ export async function get_guild_prefix(client: UnresolvedClientOperator, message
     return await guild_cache.get_prefix(guild);
 }
 
-export async function update_guild_prefix(conn: Connection, discord: DiscordNotNull, message: MessageNonNull, prefix: string) {
+export async function update_guild_prefix(conn: ConnectPromise, discord: DiscordNotNull, message: MessageNonNull, prefix: string) {
     const guild = await discord.guilds.fetch(message.guild?.id);
     await guild_cache.update_prefix(conn, guild, prefix);
 }
@@ -109,19 +107,19 @@ export default async function discomon_prefix(discord: DiscordNotNull, message: 
             ".discomon-prefix $ :: .battle -> $battle "
         );
     }
-    const conn = await get_db_connection();
-    if (!await user_exists(conn)(message.member.id)) {
-        await conn.end();
-        return send_to_discord(message.channel, '❌`user has no Discomon.`');
-    }
-    if (!first_arg) {
-        await conn.end();
-        return sender("You didn't provide a new prefix to change to!");
-    } else if (first_arg.length >= 8) {
-        await conn.end();
-        return sender("The prefix you supplied is too long! (Max 8 characters)");
-    }
-    await update_guild_prefix(conn, discord, message, first_arg);
-    await conn.end();
-    sender(`**Discomon prefix updated to** ***${ first_arg }***`);
+    await withDb(async conn => {
+        if (!await user_exists(conn)(message.member.id)) {
+            await conn.end();
+            return send_to_discord(message.channel, '❌`user has no Discomon.`');
+        }
+        if (!first_arg) {
+            await conn.end();
+            return sender("You didn't provide a new prefix to change to!");
+        } else if (first_arg.length >= 8) {
+            await conn.end();
+            return sender("The prefix you supplied is too long! (Max 8 characters)");
+        }
+        await update_guild_prefix(conn, discord, message, first_arg);
+        sender(`**Discomon prefix updated to** ***${ first_arg }***`);
+    });
 }

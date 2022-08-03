@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { ClientOperator, UnresolvedClientOperator } from "../bot-types";
 import { Command, CommandsMap, DefaultCommandsReturn } from "../commands";
-import get_db_connection from "../tools/client/get_db_connection";
+import get_db_connection, { withDb } from "../tools/client/get_db_connection";
 import { ResolvedDbFns } from "../tools/database";
 import get_server_option from "../tools/database/get_server_option";
 import { date_string } from "../helpers/date_helpers";
@@ -63,27 +63,23 @@ export function message(client: UnresolvedClientOperator) {
             return await message.channel.send(`**You are sending commands too quickly! You have sent ${ (spam_timeout + 1) - LIMIT } more commands than you are allowed to in the last ${ PER_SECONDS } seconds!**`);
         }
         console.log(`${ date_string('yyyy/MM/dd HH:mm:ss') } :: ${ first_arg } ${ args } | ${ message.member.displayName } ${ message.member.id }`);
-        const db_connection = await get_db_connection();
-        const server_options = await get_server_option(db_connection)("reboot", "reboot_reason");
-        if (server_options.reboot && command !== 'reboot') {
-            return await message.channel.send(`\`${ server_options.reboot_reason }\``);
-        }
-        try {
+        await withDb(async conn => {
+            const server_options = await get_server_option(conn)("reboot", "reboot_reason");
+            if (server_options.reboot && command !== 'reboot') {
+                return await message.channel.send(`\`${ server_options.reboot_reason }\``);
+            }
             const client_arg: ClientOperator = {
                 ...client,
                 discord: not_null_check.discord,
                 db_fns: Object.entries(client.db_fns).reduce((obj, v) => ({
                     ...obj,
-                    [v[0]]: v[1](db_connection)
+                    [v[0]]: v[1](conn)
                 }), {} as ResolvedDbFns)
             };
             const command_result = await client.commands[command](client_arg, not_null_check.message, ...args);
             if (command_result) {
                 await do_quests(command, client_arg, not_null_check.message, command_result);
             }
-        } catch (err) {
-            console.log(err);
-        }
-        await db_connection.end();
+        });
     };
 }

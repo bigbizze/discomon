@@ -5,7 +5,7 @@ import * as https from 'https';
 import express from 'express';
 import crypto from 'crypto';
 import * as bodyParser from 'body-parser';
-import get_db_connection from "./tools/client/get_db_connection";
+import { withDb } from "./tools/client/get_db_connection";
 import DBL from "dblapi.js";
 import user_exists from "./tools/database/user_exists";
 import increment_inventory from "./tools/database/increment_inventory";
@@ -62,15 +62,15 @@ if (dbl.webhook) {
 
     dbl.webhook.on('vote', async hook => {
         console.log(`User with ID ${ hook.user } just voted!`);
-        const db = await get_db_connection();
-        if (await user_exists(db)(hook.user)) {
-            const user_premium = await get_premium(db)(hook.user);
-            const { vote_credit_multiplier } = get_premium_tier(user_premium);
-            const amount = Math.round(200 * vote_credit_multiplier);
-            await increment_inventory(db)(hook.user, 'credits', amount);
-            console.log(`${ hook.user } received ${ amount } cash for voting.`);
-        }
-        await db.end();
+        await withDb(async conn => {
+            if (await user_exists(conn)(hook.user)) {
+                const user_premium = await get_premium(conn)(hook.user);
+                const { vote_credit_multiplier } = get_premium_tier(user_premium);
+                const amount = Math.round(200 * vote_credit_multiplier);
+                await increment_inventory(conn)(hook.user, 'credits', amount);
+                console.log(`${ hook.user } received ${ amount } cash for voting.`);
+            }
+        });
     });
 }
 
@@ -114,19 +114,19 @@ app.post('/patreonwebhook', async (req, res) => {
                 : 'none'
             : 'none')
     };
-
-    const db = await get_db_connection();
-    const exists_row = await db.query(`SELECT * FROM patreon WHERE patron_id = ${ pledge.patron_id }`);
-    const exists = !exists_row || exists_row.length <= 0 ? false : true;
-    console.log(`user exists already: ${ exists }`);
-    const query = resolve_patreon_query(event_type, { ...pledge }, exists);
-    if (!query) {
-        return console.log('incorrect pledge type');
-    }
-    await db.query(`${ query }`);
-    console.log('pledge should_effect_fire updated');
-    await db.end();
-    return res.status(success ? 200 : 400).json({ result: success });
+    await withDb(async conn => {
+        const exists_row = await conn.query(`SELECT * FROM patreon WHERE patron_id = ${ pledge.patron_id }`);
+        const exists = !(!exists_row || exists_row.length <= 0);
+        console.log(`user exists already: ${ exists }`);
+        const query = resolve_patreon_query(event_type, { ...pledge }, exists);
+        if (!query) {
+            return console.log('incorrect pledge type');
+        }
+        await conn.query(`${ query }`);
+        console.log('pledge should_effect_fire updated');
+        await conn.end();
+        return res.status(success ? 200 : 400).json({ result: success });
+    });
 });
 
 httpServer.listen(80, () => {

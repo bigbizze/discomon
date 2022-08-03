@@ -9,7 +9,7 @@ import { ItemRarities } from "../tools/database/open_lootbox";
 import { BattleMon } from "../tools/battles/resolvers";
 import { choice } from "./rng_helpers";
 import fs from 'fs';
-import get_db_connection from "../tools/client/get_db_connection";
+import { withDb } from "../tools/client/get_db_connection";
 import { DbDiscomon, DbItem } from "../scaffold/database_types";
 import get_mon_active_items from "../tools/database/get_mon_active_items";
 import { ClientOperator } from "../bot-types";
@@ -229,18 +229,22 @@ export const get_random_boss_name = async () => (
 );
 
 export async function item_array_from_party(party: DbDiscomon[]): Promise<DbItem[][]> {
-    const db = await get_db_connection();
-    const items = [];
-    for (let i = 0; i < party.length; i++) {
-        const slot = party[i];
-        if (party[i]) {
-            const mon_items = await get_mon_active_items(db)(slot.id);
-            items.push(mon_items);
-        } else {
-            items.push([]);
+    const items = await withDb(async db => {
+        const items: DbItem[][] = [];
+        for (let i = 0; i < party.length; i++) {
+            const slot = party[i];
+            if (party[i]) {
+                const mon_items = await get_mon_active_items(db)(slot.id);
+                items.push(mon_items);
+            } else {
+                items.push([]);
+            }
         }
+        return items;
+    });
+    if (!items) {
+        throw new Error("didn't get DbItem[][]!");
     }
-    await db.end();
     return items;
 }
 
